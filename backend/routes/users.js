@@ -11,4 +11,10 @@ router.post('/login/',
     UsersController.logIn
 );
 
+router.get('/users/',
+    UsersController.verifyToken,
+    UsersController.checkIfUserCanManageUsers,
+    UsersController.getAllUsers
+)
+
 module.exports = router;

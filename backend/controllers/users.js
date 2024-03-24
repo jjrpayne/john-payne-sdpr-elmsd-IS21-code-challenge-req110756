@@ -120,5 +120,18 @@ module.exports = {
         } catch (err) {
             return res.status(500).send({error: "Internal server error"});
         }
+    },
+
+    // get all users
+    getAllUsers : async (req, res) => {
+        const text = qStrings.getAllUsers;
+        const values = [];
+        try {
+            const result = await pool.query(text, values);
+            const usersList = result.rows;
+            return res.status(200).send(usersList);
+        } catch (err) {
+            return res.status(500).send({error: "Internal server error"});
+        }
     }
 }
