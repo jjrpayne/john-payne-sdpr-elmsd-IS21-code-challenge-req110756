@@ -20,6 +20,9 @@ notes.txt
 # production
 /frontend/build
 
+# environment variables
+**/*.env
+
 # misc
 .DS_Store
 .env.local
