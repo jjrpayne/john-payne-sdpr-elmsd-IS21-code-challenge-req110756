@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const pool = require('../db/dbConfig');
 
 router.get('', (req, res) => {
     res.send('Hello A Painting Company!');

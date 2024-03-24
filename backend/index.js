@@ -1,7 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
-const port = 3000;
+
+require('dotenv').config();
+
+const port = process.env.PORT;
 
 // Add Access Control Allow Origin headers
 app.use((req, res, next) => {
