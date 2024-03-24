@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET;
 
 module.exports = {
+    // hash password
     generatePasswordHash: async (req, res, next) => {
         b = req.body;
         bcrypt.genSalt(10, function (err, salt) {
@@ -20,6 +21,7 @@ module.exports = {
         })
     },
 
+    // create a new account
     signUp : async(req, res) => {
         const b = req.body;
         const text = qStrings.insertNewUser;
@@ -37,6 +39,28 @@ module.exports = {
                 return res.status(401).send({error: "Username taken"})
             }
             return res.status(500).send({error: "Internal server error"});
+        }
+    },
+
+    // log into account, returns auth token
+    logIn : async(req, res) => {
+        const b = req.body;
+        const text = qStrings.findUser;
+        var values = [b.username];
+
+        try {
+            const result = await pool.query(text, values);
+            const user = result.rows[0];
+            if (user && await bcrypt.compare(b.password, user.password_hash)) {
+                const token = jwt.sign({id:user.id, username: user.username}, JWT_SECRET, {
+                    expiresIn: '1h'
+                });
+                return res.status(200).json({token});
+            } else {
+                return res.status(401).send({error: "Invalid username or password."})
+            }
+        } catch (err) {
+            return res.status(500).send(err);
         }
     }
 }
