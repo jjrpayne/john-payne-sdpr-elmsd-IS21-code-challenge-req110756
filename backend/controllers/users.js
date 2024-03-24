@@ -84,6 +84,7 @@ module.exports = {
         }
     },
 
+    // check if user has permission to edit paint status
     checkIfUserCanEditPaint : async(req, res, next) => {
         const userId = req.user_id;
         const text = qStrings.findUserById;
@@ -93,6 +94,25 @@ module.exports = {
             const result = await pool.query(text, values);
             const user = result.rows[0];
             if(user.can_update_paint){
+                next();
+            } else {
+                return res.status(401).send({error: "Access denied."});
+            }
+        } catch (err) {
+            return res.status(500).send({error: "Internal server error"});
+        }
+    },
+
+    // check if user has permission to view users and manage permissions
+    checkIfUserCanManageUsers : async(req, res, next) => {
+        const userId = req.user_id;
+        const text = qStrings.findUserById;
+        var values = [userId];
+
+        try {
+            const result = await pool.query(text, values);
+            const user = result.rows[0];
+            if(user.can_manage_users){
                 next();
             } else {
                 return res.status(401).send({error: "Access denied."});
