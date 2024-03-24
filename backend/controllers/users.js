@@ -55,12 +55,32 @@ module.exports = {
                 const token = jwt.sign({id:user.id, username: user.username}, JWT_SECRET, {
                     expiresIn: '1h'
                 });
-                return res.status(200).json({token});
+                return res.status(200).json({token})
             } else {
                 return res.status(401).send({error: "Invalid username or password."})
             }
         } catch (err) {
             return res.status(500).send(err);
+        }
+    },
+
+    // verify token given by login route
+    verifyToken : async(req, res, next) => {
+        const authHeader = req.header('Authorization');
+        if(!authHeader) {
+            return res.status(401).send({error: "Access denied"});
+        } else if (authHeader.split(" ")[0] !== "Bearer") {
+            return res.status(401).send({error: "Invalid token"});
+        } else {
+            const token = authHeader.split(" ")[1]
+            try {
+                // if token is valid, pass on user id to the next function
+                const decoded = jwt.verify(token, JWT_SECRET)
+                req.user_id = decoded.id
+                next()
+            } catch(err) {
+                return res.status(401).send({error: "Invalid token"});
+            }
         }
     }
 }
