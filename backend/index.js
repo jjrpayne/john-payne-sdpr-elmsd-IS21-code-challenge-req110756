@@ -25,6 +25,8 @@ app.use(bodyParser.urlencoded({
     extended: true
 }));
 
+app.use("/api/", require("./routes/general"));
+
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`);
 })
