@@ -45,7 +45,7 @@ module.exports = {
     // log into account, returns auth token
     logIn : async(req, res) => {
         const b = req.body;
-        const text = qStrings.findUser;
+        const text = qStrings.findUserByUsername;
         var values = [b.username];
 
         try {
@@ -75,12 +75,30 @@ module.exports = {
             const token = authHeader.split(" ")[1]
             try {
                 // if token is valid, pass on user id to the next function
-                const decoded = jwt.verify(token, JWT_SECRET)
-                req.user_id = decoded.id
-                next()
+                const decoded = jwt.verify(token, JWT_SECRET);
+                req.user_id = decoded.id;
+                next();
             } catch(err) {
                 return res.status(401).send({error: "Invalid token"});
             }
+        }
+    },
+
+    checkIfUserCanEditPaint : async(req, res, next) => {
+        const userId = req.user_id;
+        const text = qStrings.findUserById;
+        var values = [userId];
+
+        try {
+            const result = await pool.query(text, values);
+            const user = result.rows[0];
+            if(user.can_update_paint){
+                next();
+            } else {
+                return res.status(401).send({error: "Access denied."});
+            }
+        } catch (err) {
+            return res.status(500).send({error: "Internal server error"});
         }
     }
 }
