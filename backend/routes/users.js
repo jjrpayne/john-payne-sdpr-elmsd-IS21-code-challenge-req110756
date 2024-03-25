@@ -17,4 +17,10 @@ router.get('/users/',
     UsersController.getAllUsers
 )
 
+router.put('/edit_user_permissions/:id',
+    UsersController.verifyToken,
+    UsersController.checkIfUserCanManageUsers,
+    UsersController.editUserPermissions
+)
+
 module.exports = router;

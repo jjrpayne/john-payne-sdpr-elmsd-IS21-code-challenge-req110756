@@ -133,5 +133,46 @@ module.exports = {
         } catch (err) {
             return res.status(500).send({error: "Internal server error"});
         }
+    },
+
+    // edit user permissions
+    editUserPermissions : async(req, res) => {
+        const objectUserId = 1*req.params.id;
+        const b = req.body;
+
+        // check if updating both permissions or just one
+        if (typeof b.can_manage_users === "boolean" && typeof b.can_update_paint === "boolean"){
+            const text = qStrings.editAllPermissions;
+            const values = [objectUserId, b.can_update_paint, b.can_manage_users];
+            try {
+                const result = await pool.query(text, values);
+                const newPermissions = result.rows[0];
+                return res.status(200).send(newPermissions);
+            } catch (err) {
+                return res.status(500).send({error: "Internal server error"});
+            }
+        } else if (typeof b.can_manage_users === "boolean") {
+            const text = qStrings.editCanManageUsers;
+            const values = [objectUserId, b.can_manage_users];
+            try {
+                const result = await pool.query(text, values);
+                const newPermissions = result.rows[0];
+                return res.status(200).send(newPermissions);
+            } catch (err) {
+                return res.status(500).send({error: "Internal server error"});
+            }
+        } else if (typeof b.can_update_paint === "boolean") {
+            const text = qStrings.editCanUpdatePaint;
+            const values = [objectUserId, b.can_update_paint];
+            try {
+                const result = await pool.query(text, values);
+                const newPermissions = result.rows[0];
+                return res.status(200).send(newPermissions);
+            } catch (err) {
+                return res.status(500).send({error: "Internal server error"});
+            }
+        } else {
+            return res.status(400).send({error: "Invalid permissions"});
+        }
     }
 }
